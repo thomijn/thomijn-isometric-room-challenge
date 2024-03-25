@@ -10,6 +10,7 @@ export const Flower = forwardRef((props, ref) => {
 
   return (
     <instancedMesh
+      frustumCulled={false}
       ref={ref}
       args={[undefined, undefined, 10]}
       castShadow

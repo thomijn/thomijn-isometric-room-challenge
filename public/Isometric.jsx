@@ -13,10 +13,11 @@ export function Model(props) {
       <mesh geometry={nodes.bak.geometry} material={nodes.bak.material} />
       <mesh geometry={nodes.water.geometry} material={nodes.water.material} />
       <mesh geometry={nodes['portal-frame'].geometry} material={nodes['portal-frame'].material} />
-      <mesh geometry={nodes.grass.geometry} material={nodes.grass.material} />
       <mesh geometry={nodes.portal.geometry} material={nodes.portal.material} />
       <mesh geometry={nodes.Cylinder.geometry} material={nodes.Cylinder.material} />
       <mesh geometry={nodes.Curve.geometry} material={materials['SVGMat.001']} />
+      <mesh geometry={nodes.ground.geometry} material={nodes.ground.material} />
+      <mesh geometry={nodes.rocks.geometry} material={nodes.rocks.material} />
       <mesh geometry={nodes.Object_2.geometry} material={materials.acacia_leaf} />
       <mesh geometry={nodes.Object_2001.geometry} material={materials.acacia_leaf} />
       <mesh geometry={nodes.Object_3.geometry} material={materials.bark07} />

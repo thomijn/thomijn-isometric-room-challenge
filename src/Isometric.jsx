@@ -39,6 +39,9 @@ export function Model(props) {
   const ref = useRef()
   const gl = useThree((state) => state.gl)
   const waterNormals = useLoader(THREE.TextureLoader, '/waternormals.jpeg')
+  const groundBaked = useLoader(THREE.TextureLoader, '/ground.jpg')
+  groundBaked.channel = 1;
+  groundBaked.flipY = false;
   waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping
 
   const customShader = Reflector.ReflectorShader
@@ -65,37 +68,45 @@ export function Model(props) {
   useFrame((state, delta) => (ref.current.material.uniforms.time.value += delta))
   const geom = useMemo(() => new THREE.PlaneGeometry(10, 10), [])
 
-  nodes.grass.geometry.setAttribute('density', computeFlowerDensity(nodes.grass.geometry))
+  nodes.ground.geometry.setAttribute('density', computeFlowerDensity(nodes.ground.geometry))
+  const [hovered, set] = useState()
 
   return (
     <group {...props} dispose={null}>
-      <mesh geometry={nodes.bak.geometry} material={nodes.bak.material} >
+      <mesh frustumCulled={false} geometry={nodes.bak.geometry} material={nodes.bak.material} >
         <meshPhysicalMaterial roughness={0} metalness={0.4} envMapIntensity={1} color={'#b57559'} />
       </mesh>
 
-      <reflector ref={ref} args={[nodes.water.geometry, config]} />
+      <reflector frustumCulled={false} ref={ref} args={[nodes.water.geometry, config]} />
 
-      <mesh geometry={nodes['portal-frame'].geometry} material={nodes['portal-frame'].material}>
+      <mesh frustumCulled={false} geometry={nodes['portal-frame'].geometry} material={nodes['portal-frame'].material}>
       </mesh>
-      <mesh receiveShadow geometry={nodes.Cylinder.geometry} material={nodes.Cylinder.material}>
+      <mesh frustumCulled={false} receiveShadow geometry={nodes.Cylinder.geometry} material={nodes.Cylinder.material}>
         <meshStandardMaterial {...stencil} color={'#ffffff'} envMapIntensity={0.9} />
       </mesh>
 
       <Logo materials={materials} nodes={nodes} stencil={stencil} />
 
-      <Mask id={1} colorWrite={false} depthWrite={false}
+      <Mask frustumCulled={false} id={1} colorWrite={true} depthWrite={false}
         geometry={nodes.portal.geometry}
       >
+        <meshBasicMaterial color={'#fe4409'} />
       </Mask>
 
 
       <Grass>
-        <mesh geometry={nodes.grass.geometry} material={nodes.grass.material} >
-          <meshBasicMaterial color={'#3f2f26'} />
+        <mesh frustumCulled={false} geometry={nodes.ground.geometry} material={nodes.ground.material}  >
+          <meshBasicMaterial map={groundBaked} />
         </mesh>
       </Grass>
 
-      <mesh castShadow receiveShadow geometry={nodes.Object_2.geometry} material={materials.acacia_leaf}>
+      <mesh frustumCulled={false} geometry={nodes.rocks.geometry} material={nodes.rocks.material} >
+      <meshBasicMaterial map={groundBaked} />
+
+      </mesh>
+
+
+      <mesh frustumCulled={false} castShadow receiveShadow geometry={nodes.Object_2.geometry} material={materials.acacia_leaf}>
         <MeshDistortMaterial
           side={THREE.DoubleSide}
           factor={1.5}
@@ -106,7 +117,7 @@ export function Model(props) {
         <meshStandardMaterial color={'#2f1f15'} />
       </mesh>
 
-      <mesh
+      <mesh frustumCulled={false}
         castShadow receiveShadow geometry={nodes.Object_2001.geometry} material={materials.acacia_leaf}>
         <MeshDistortMaterial
           side={THREE.DoubleSide}
@@ -114,7 +125,7 @@ export function Model(props) {
           speed={0.5}
           map={bakedTexture} transparent alphaTest={0.2} depthWrite={false} />
       </mesh>
-      <mesh castShadow receiveShadow geometry={nodes.Object_3001.geometry} material={materials.bark07} >
+      <mesh frustumCulled={false} castShadow receiveShadow geometry={nodes.Object_3001.geometry} material={materials.bark07} >
         <meshStandardMaterial color={'#2f1f15'} />
       </mesh>
 
@@ -128,8 +139,8 @@ const Logo = ({ materials, nodes, stencil }) => {
   useCursor(hovered, /*'pointer', 'auto', document.body*/)
 
   return (
-    <Float floatIntensity={1} floatingRange={[0, 0.5]} rotationIntensity={0.2} speed={2} >
-      <mesh onClick={() => {
+    <Float floatIntensity={1} floatingRange={[0, 0.5]} rotationIntensity={0.4} speed={2} >
+      <mesh frustumCulled={false} onClick={() => {
         window.open('https://www.thebrinkagency.com/', '_blank')
       }} onPointerOver={() => set(true)} onPointerOut={() => set(false)} castShadow geometry={nodes.Curve.geometry} material={materials['SVGMat.001']} >
         <meshStandardMaterial roughness={0.2} {...stencil} color={'#000000'} />

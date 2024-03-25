@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
 import { extend, useFrame } from '@react-three/fiber'
 import { Sampler, shaderMaterial, useTexture } from '@react-three/drei'
@@ -15,7 +15,9 @@ import { Flower } from './Flower'
 extend({ WindLayer })
 extend({ WindLayerTall })
 
-export function Grass({ children, strands = 9000, ...props }) {
+
+
+export function Grass({ children, strands = 7000, ...props }) {
     const alpha = useTexture('/alpha.jpg');
     const meshRef = useRef(null)
     const meshTallRef = useRef(null)
@@ -23,7 +25,6 @@ export function Grass({ children, strands = 9000, ...props }) {
 
     const windLayer = useRef(null)
     const windLayerTall = useRef(null)
-    const [hovered, setHovered] = useState(false)
 
     const mousePosition = useRef(new THREE.Vector3())
 
@@ -42,7 +43,7 @@ export function Grass({ children, strands = 9000, ...props }) {
         }
     })
 
-    
+
     useEffect(() => {
         meshRef.current.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2))
         meshRef.current.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, 0.2))
@@ -51,9 +52,48 @@ export function Grass({ children, strands = 9000, ...props }) {
         flowerRef.current.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2))
         flowerRef.current.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, 0.5))
     }, [])
-    
+
     const geomRef = useRef()
-    
+
+    const transform = useCallback(({ position, normal, dummy: object }) => {
+        const p = position.clone().multiplyScalar(5);
+        const n = Perlin.simplex3(...p.toArray());
+        object.scale.setScalar(THREE.MathUtils.mapLinear(n, -1, 1, 0.6, 1.1) * 0.5);
+
+        object.position.copy(position);
+        object.lookAt(normal.add(position));
+        object.rotation.y += Math.random() - 0.5 * (Math.PI * 0.5);
+        object.rotation.z += Math.random() - 0.5 * (Math.PI * 0.5);
+        object.rotation.x += Math.random() - 0.5 * (Math.PI * 0.5);
+        object.updateMatrix();
+        return object;
+    }, []);
+
+    const transformTall = useCallback(({ position, normal, dummy: object }) => {
+        const p = position.clone().multiplyScalar(5)
+        const n = Perlin.simplex3(...p.toArray())
+        object.scale.setScalar(THREE.MathUtils.mapLinear(n, -1, 1, 0.6, 1.1) * 0.5)
+
+        object.position.copy(position)
+        object.lookAt(normal.add(position))
+        object.rotation.y += Math.random() - 0.5 * (Math.PI * 0.5)
+        object.rotation.z += Math.random() - 0.5 * (Math.PI * 0.5)
+        object.rotation.x += Math.random() - 0.5 * (Math.PI * 0.5)
+        object.updateMatrix()
+        return object
+    }, []);
+
+    const transformFlower = useCallback(({ position, normal, dummy: object }) => {
+        object.scale.setScalar((Math.random() * 0.5 + 0.5) * 0.1)
+        object.position.copy(position)
+        object.lookAt(normal.add(position))
+        object.rotation.y += Math.random() - 0.5 * (Math.PI * 0.5)
+        object.rotation.x += Math.random() - 0.5 * (Math.PI * 0.5)
+        object.rotation.z += Math.random() - 0.5 * (Math.PI * 0.5)
+        object.updateMatrix()
+        return object
+    }, []);
+
     // onMouseMove event children
     return (
         <>
@@ -63,7 +103,7 @@ export function Grass({ children, strands = 9000, ...props }) {
                 onPointerLeave: () => mousePosition.current = new THREE.Vector3(0, 0, 0),
                 // onPointerEnter: (e) => mousePosition.current = e.point,
             })}
-            <instancedMesh receiveShadow ref={meshRef} args={[undefined, undefined, strands]} {...props}>
+            <instancedMesh frustumCulled={false} receiveShadow ref={meshRef} args={[undefined, undefined, strands]} {...props}>
                 <planeGeometry args={[0.035, 0.4, 2, 20, false, 0, Math.PI]} />
                 <LayerMaterial
                     alphaTest={0.4}
@@ -82,7 +122,7 @@ export function Grass({ children, strands = 9000, ...props }) {
                     />
                 </LayerMaterial>
             </instancedMesh>
-            <instancedMesh receiveShadow ref={meshTallRef} args={[undefined, undefined, 2000]} {...props}>
+            <instancedMesh frustumCulled={false} receiveShadow ref={meshTallRef} args={[undefined, undefined, 2000]} {...props}>
                 <planeGeometry args={[0.035, 1, 2, 20, false, 0, Math.PI]} />
                 <LayerMaterial
                     alphaTest={0.4}
@@ -105,53 +145,20 @@ export function Grass({ children, strands = 9000, ...props }) {
             <group>
                 <Sampler
                     count={strands}
-                    transform={({ position, normal, dummy: object }) => {
-                        const p = position.clone().multiplyScalar(5)
-                        const n = Perlin.simplex3(...p.toArray())
-                        object.scale.setScalar(THREE.MathUtils.mapLinear(n, -1, 1, 0.6, 1.1) * 0.5)
-
-                        object.position.copy(position)
-                        object.lookAt(normal.add(position))
-                        object.rotation.y += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.rotation.z += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.rotation.x += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.updateMatrix()
-                        return object
-                    }}
+                    transform={transform}
                     mesh={geomRef}
                     instances={meshRef}
                 />
-                 <Sampler
+                <Sampler
                     count={2000}
-                    transform={({ position, normal, dummy: object }) => {
-                        const p = position.clone().multiplyScalar(5)
-                        const n = Perlin.simplex3(...p.toArray())
-                        object.scale.setScalar(THREE.MathUtils.mapLinear(n, -1, 1, 0.6, 1.1) * 0.5)
-
-                        object.position.copy(position)
-                        object.lookAt(normal.add(position))
-                        object.rotation.y += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.rotation.z += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.rotation.x += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.updateMatrix()
-                        return object
-                    }}
+                    transform={transformTall}
                     mesh={geomRef}
                     instances={meshTallRef}
                     weight='color'
                 />
                 <Sampler
                     count={10}
-                    transform={({ position, normal, dummy: object }) => {
-                        object.scale.setScalar((Math.random() * 0.5 + 0.5) * 0.1)
-                        object.position.copy(position)
-                        object.lookAt(normal.add(position))
-                        object.rotation.y += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.rotation.x += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.rotation.z += Math.random() - 0.5 * (Math.PI * 0.5)
-                        object.updateMatrix()
-                        return object
-                    }}
+                    transform={transformFlower}
                     mesh={geomRef}
                     instances={flowerRef}
                     weight="color"
@@ -161,3 +168,5 @@ export function Grass({ children, strands = 9000, ...props }) {
         </>
     )
 }
+
+export const MemoizedGrass = React.memo(Grass);
