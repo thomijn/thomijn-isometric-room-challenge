@@ -50,7 +50,6 @@ export function Grass({ children, strands = 9000, ...props }) {
         meshTallRef.current.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, 0.2))
         flowerRef.current.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2))
         flowerRef.current.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, 0.5))
-        console.log(geomRef)
     }, [])
     
     const geomRef = useRef()
