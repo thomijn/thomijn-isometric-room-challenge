@@ -7,7 +7,6 @@ import vertexShader from './shaders/vertex.glsl'
 import fragmentShader from './shaders/fragment.glsl'
 import WindLayer from './WindLayer'
 import WindLayerTall from './WindLayerTall'
-import audioSfx from '/rustle.mp3'
 
 Perlin.seed(Math.random())
 import { Depth, LayerMaterial } from 'lamina'
@@ -24,11 +23,6 @@ export function Grass({ children, strands = 9000, ...props }) {
     const meshRef = useRef(null)
     const meshTallRef = useRef(null)
     const flowerRef = useRef()
-    const [play, { sound }] = useSound(audioSfx, {
-        volume: 0.4,
-        loop: false,
-        interrupt: true
-    });
     const windLayer = useRef(null)
     const windLayerTall = useRef(null)
     const mousePosition = useRef(new THREE.Vector3())
