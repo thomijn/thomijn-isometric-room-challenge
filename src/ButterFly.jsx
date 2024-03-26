@@ -9,7 +9,7 @@ import { FBM } from 'three-noise'
 const vec = new Vector2()
 export function Butterfly(props) {
   const group = useRef()
-  const { scene, animations } = useGLTF('/butterfly.glb')
+  const { scene, animations } = useGLTF('/butterfly-transformed.glb')
   const cloneScene = useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { actions } = useAnimations(animations, group)
   const fbm = useMemo(() => new FBM({ seed: Math.random() }), [])

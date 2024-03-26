@@ -39,24 +39,17 @@ export default class WindLayerFlower extends Abstract {
           lamina_noise_simplex(baseGP.xyz * 0.1 + u_time * 0.3 * u_sway)
         );
 
-      // if u_mouse close to the vertex, swing more and give it some easing
-      // if mouse pos is vec3(0, 0, 0), ease back to original position
-
-      float dist = distance(u_mouse.xyz, baseGP.xyz);
-      float factor = smoothstep(0.0, 1.0, dist);
-
       noise = smoothstep(-1.0, 1.0, noise);
-      float swingX = sin(u_time * .0 + noise.x * 5.0 * PI + factor * 3.) * pow(pos.z, 2.0);
-      float swingY = cos(u_time * .0 + noise.x * 5.0 * PI + factor * 3.) * pow(pos.z, 2.0);
+      float swingX = sin(u_time * .0 + noise.x * 1.0 * PI) * pow(pos.z, 2.0);
+      float swingY = cos(u_time * .0 + noise.x * 1.0 * PI) * pow(pos.z, 2.0);
+      float swingZ = sin(u_time * 1.0 + noise.y * 1.0 * PI) * pow(pos.z, 2.0);
 
-         
-
-      pos.x += swingX;
-      pos.y += swingY;
-      
+      pos.x += sin(u_time) * pow(pos.z, 2.0) * 0.5;
+      pos.y += cos(u_time) * pow(pos.z, 2.0)  * 0.5;
+      // pos.z += swingZ; // Apply the swing effect to the z component
 
 
-      return (pos * u_length);
+      return (pos * 0.1);
     }
   `
 

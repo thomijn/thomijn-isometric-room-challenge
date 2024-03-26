@@ -43,7 +43,7 @@ background: linear-gradient(5deg, rgba(255,240,227,1) 0%, rgba(171,228,255,1) 10
 
 .progress-bar {
   height: 100%;
-  background: #fff;
+  background: #0000;
   width: 0;
 }
 

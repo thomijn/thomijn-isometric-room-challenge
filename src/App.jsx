@@ -33,7 +33,7 @@ function App() {
       <AnimatePresence>
         {!entered && (
           <motion.div transition={{ duration: 1.2 }} exit={{ opacity: 0 }} className="intro">
-            {/* <div className="progress-bar-wrapper">
+            <div className="progress-bar-wrapper">
               <motion.div
                 className="progress-bar"
                 initial={{ width: 0 }}
@@ -52,7 +52,7 @@ function App() {
                   },
                 }}
               ></motion.div>
-            </div> */}
+            </div>
             <motion.button
               exit={{ opacity: 0, transition: { duration: 0.1 } }}
               onClick={() => {
@@ -88,9 +88,7 @@ function App() {
             zoom: 90,
           }}>
           {/* <color attach="background" args={["#e7b892"]} /> */}
-          <ambientLight intensity={0.5} />
           <directionalLight castShadow position={[4, 6, 3]} intensity={15} />
-          <StatsGl />
           <Scene entered={entered} />
           <OrbitControls rotation={[0, -Math.PI / 4, 0]} minPolarAngle={0} maxPolarAngle={Math.PI / 2} minAzimuthAngle={0} maxAzimuthAngle={Math.PI / 2} />
           <Environment preset="sunset" />
