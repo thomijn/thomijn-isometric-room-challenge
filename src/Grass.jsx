@@ -7,25 +7,30 @@ import vertexShader from './shaders/vertex.glsl'
 import fragmentShader from './shaders/fragment.glsl'
 import WindLayer from './WindLayer'
 import WindLayerTall from './WindLayerTall'
+import audioSfx from '/rustle.mp3'
 
 Perlin.seed(Math.random())
 import { Depth, LayerMaterial } from 'lamina'
 import { Flower } from './Flower'
+import useSound from 'use-sound'
 
 extend({ WindLayer })
 extend({ WindLayerTall })
 
 
 
-export function Grass({ children, strands = 7000, ...props }) {
+export function Grass({ children, strands = 9000, ...props }) {
     const alpha = useTexture('/alpha.jpg');
     const meshRef = useRef(null)
     const meshTallRef = useRef(null)
     const flowerRef = useRef()
-
+    const [play, { sound }] = useSound(audioSfx, {
+        volume: 0.4,
+        loop: false,
+        interrupt: true
+    });
     const windLayer = useRef(null)
     const windLayerTall = useRef(null)
-
     const mousePosition = useRef(new THREE.Vector3())
 
     useFrame((state, delta) => {
@@ -99,7 +104,11 @@ export function Grass({ children, strands = 7000, ...props }) {
         <>
             {React.cloneElement(children, {
                 ref: geomRef,
-                onPointerMove: (e) => mousePosition.current = e.point,
+                onPointerMove: (e) => {
+
+                    mousePosition.current = e.point
+
+                },
                 onPointerLeave: () => mousePosition.current = new THREE.Vector3(0, 0, 0),
                 // onPointerEnter: (e) => mousePosition.current = e.point,
             })}
